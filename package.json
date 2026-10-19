@@ -1,0 +1,42 @@
+{
+  "name": "agy-router-desktop",
+  "version": "2.0.0",
+  "description": "AGY Multi-Session AI Gateway & LLM Router Analytics — Desktop Edition",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build": "electron-builder --win portable",
+    "build:installer": "electron-builder --win nsis"
+  },
+  "keywords": [
+    "agy",
+    "llm",
+    "router",
+    "analytics",
+    "electron"
+  ],
+  "author": "AGY Team",
+  "license": "MIT",
+  "type": "commonjs",
+  "devDependencies": {
+    "electron": "^36.3.1",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "id.my.shipr.agy",
+    "productName": "AGY Router",
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*",
+      "assets/**/*"
+    ],
+    "win": {
+      "target": [
+        "portable"
+      ],
+      "icon": "assets/icon.png"
+    }
+  }
+}

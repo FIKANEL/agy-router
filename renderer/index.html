@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AGY // Multi-Session AI Gateway & LLM Router Analytics</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Custom Titlebar (frameless window) -->
+  <div class="titlebar" id="titlebar">
+    <div class="titlebar-drag">
+      <div class="titlebar-brand">
+        <span class="titlebar-logo">▲</span>
+        <span class="titlebar-name">AGY ROUTER</span>
+        <span class="titlebar-version">v2.0.0 DESKTOP</span>
+      </div>
+    </div>
+    <div class="titlebar-controls">
+      <button class="titlebar-btn" id="btn-minimize" aria-label="Minimize">
+        <svg width="12" height="12" viewBox="0 0 12 12"><line x1="1" y1="6" x2="11" y2="6" stroke="currentColor" stroke-width="1.5"/></svg>
+      </button>
+      <button class="titlebar-btn" id="btn-maximize" aria-label="Maximize">
+        <svg width="12" height="12" viewBox="0 0 12 12"><rect x="1.5" y="1.5" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+      </button>
+      <button class="titlebar-btn titlebar-btn-close" id="btn-close" aria-label="Close">
+        <svg width="12" height="12" viewBox="0 0 12 12"><line x1="1" y1="1" x2="11" y2="11" stroke="currentColor" stroke-width="1.5"/><line x1="11" y1="1" x2="1" y2="11" stroke="currentColor" stroke-width="1.5"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Top Navigation Header -->
+  <header class="container" style="padding-bottom: 0;">
+    <nav class="nav-bar">
+      <div class="brand-wrap">
+        <div class="brand-logo">▲</div>
+        <div>
+          <div class="brand-title">AGY ROUTER // MULTI-SESSION ANALYTICS</div>
+          <div class="brand-tag">COOLIFY ENGINE · DESKTOP EDITION</div>
+        </div>
+      </div>
+      
+      <div class="nav-actions" id="nav-actions-auth" style="display: none;">
+        <span class="badge badge-inverted" id="clock-display">00:00:00 UTC</span>
+        <button class="btn btn-sm" id="btn-sync" title="Fetch latest telemetry">
+          <span id="sync-icon">⟳</span> SYNC
+        </button>
+        <button class="btn btn-sm btn-primary" id="btn-logout">
+          LOGOUT
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main View Container -->
+  <main class="container">
+
+    <!-- VIEW 1: AUTHENTICATION / LOGIN -->
+    <section id="login-view">
+      <div class="login-card">
+        <div class="login-header">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span class="badge badge-inverted">SECURE GATEWAY</span>
+            <span class="badge badge-outline">RFC 7807</span>
+          </div>
+          <h1>SYSTEM AUTHENTICATION</h1>
+          <p>Enter administrator credentials to inspect LLM routing telemetry.</p>
+        </div>
+
+        <div class="login-alert" id="login-alert"></div>
+
+        <form id="login-form">
+          <div class="form-group">
+            <label class="form-label" for="login-username">Operator Username</label>
+            <input 
+              type="text" 
+              id="login-username" 
+              class="form-input" 
+              placeholder="e.g. admin" 
+              required 
+              autocomplete="username" 
+              spellcheck="false"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="login-password">Access Secret Key</label>
+            <input 
+              type="password" 
+              id="login-password" 
+              class="form-input" 
+              placeholder="••••••••••••" 
+              required 
+              autocomplete="current-password"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="server-url">Server URL</label>
+            <input 
+              type="url" 
+              id="server-url" 
+              class="form-input" 
+              value="https://agy.shipr.my.id"
+              required 
+              spellcheck="false"
+            />
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;" id="btn-login-submit">
+            AUTHENTICATE & ENTER →
+          </button>
+        </form>
+
+        <div class="login-helper">
+          <strong>DEFAULT ENVIRONMENT CREDENTIALS:</strong><br>
+          User: <code>admin</code><br>
+          Password: <code>mori@gateway2026</code><br>
+          <em>(Configurable via ADMIN_USER and ADMIN_PASSWORD)</em>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: DASHBOARD BENTO GRID -->
+    <section id="dashboard-view">
+
+      <!-- Status Hero Banner -->
+      <div class="status-banner">
+        <div class="status-banner-left">
+          <div class="stream-live-pill" id="stream-status-pill">
+            <span class="stream-pulse-dot" id="stream-dot"></span>
+            <span id="stream-status-text">SSE STREAM ACTIVE (3s)</span>
+          </div>
+
+          <div class="active-model-hero-badge" id="hero-model-badge">
+            <span>CLI ACTIVE:</span>
+            <span id="hero-model-name">Detecting...</span>
+          </div>
+
+          <span class="badge badge-outline" id="sessions-count-badge">
+            2 SESSIONS REGISTERED
+          </span>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span style="font-family: var(--font-mono); font-size: 11px; font-weight: 700;">CURRENCY:</span>
+          <div class="currency-pill-switch">
+            <button class="currency-btn active" id="btn-curr-usd">USD ($)</button>
+            <button class="currency-btn" id="btn-curr-idr">IDR (Rp)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bento Metric Cards -->
+      <div class="metrics-bento">
+        <div class="metric-card">
+          <div class="metric-label-row">
+            <span class="metric-label">TOTAL REQUESTS</span>
+            <span class="badge badge-outline">ALL SESSIONS</span>
+          </div>
+          <div class="metric-value" id="val-total-requests">--</div>
+          <div class="metric-sub" id="sub-total-sessions">Aggregating tmux & Telegram Bridge</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-label-row">
+            <span class="metric-label">INPUT TOKENS</span>
+            <span class="badge badge-muted">PROMPT</span>
+          </div>
+          <div class="metric-value" id="val-input-tokens">--</div>
+          <div class="metric-sub">Multi-turn context & user prompts</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-label-row">
+            <span class="metric-label">OUTPUT TOKENS</span>
+            <span class="badge badge-muted">GEN</span>
+          </div>
+          <div class="metric-value" id="val-output-tokens">--</div>
+          <div class="metric-sub">Synthesized code, diffs & replies</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-label-row">
+            <span class="metric-label">CACHED TOKENS</span>
+            <span class="badge badge-inverted" id="badge-cache-hit">--% HIT</span>
+          </div>
+          <div class="metric-value" id="val-cached-tokens">--</div>
+          <div class="metric-sub">System directives & workspace cache</div>
+        </div>
+
+        <div class="metric-card metric-card-highlight">
+          <div class="metric-label-row">
+            <span class="metric-label">ESTIMATED COST</span>
+            <span class="badge badge-inverted" id="badge-currency-indicator">USD</span>
+          </div>
+          <div class="metric-value" id="val-estimated-cost">--</div>
+          <div class="metric-sub" id="sub-cost-formula">Google AI Pro Zero-Cost Tier Applied</div>
+        </div>
+      </div>
+
+      <!-- Dynamic Topology Matrix -->
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <span class="badge badge-inverted">TOPOLOGY</span>
+          <h2 class="section-title">DYNAMIC AI MODEL MATRIX</h2>
+        </div>
+        <div style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);" id="topology-meta-text">
+          AUTO-SCANNING TMUX & TELEGRAM BRIDGE
+        </div>
+      </div>
+
+      <div class="route-grid" id="route-matrix-container">
+        <!-- Rendered dynamically by JavaScript -->
+      </div>
+
+      <!-- Live Activity Stream Ledger -->
+      <div class="stream-container">
+        <div class="stream-toolbar">
+          <div class="section-title-wrap">
+            <span class="badge badge-inverted">LEDGER</span>
+            <h2 class="section-title">TRANSACTION ACTIVITY STREAM</h2>
+          </div>
+
+          <div class="filter-group">
+            <select id="filter-session" class="filter-select">
+              <option value="ALL">ALL SESSIONS</option>
+              <option value="agy">agy [Antigravity Main]</option>
+              <option value="project">project [Workspace]</option>
+              <option value="telegram">Telegram Bridge</option>
+            </select>
+
+            <select id="filter-model" class="filter-select">
+              <option value="ALL">ALL MODELS</option>
+            </select>
+
+            <input 
+              type="text" 
+              id="search-task" 
+              class="search-input" 
+              placeholder="Search prompt, session, or tx..."
+            />
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="stream-table">
+            <thead>
+              <tr>
+                <th>TX ID</th>
+                <th>TIMESTAMP</th>
+                <th>ORIGIN SESSION</th>
+                <th>MODEL / ROUTE</th>
+                <th>IN TOKENS</th>
+                <th>OUT TOKENS</th>
+                <th>CACHED</th>
+                <th>LATENCY</th>
+                <th>EST. COST</th>
+                <th>STATUS</th>
+                <th>TASK / CONTEXT</th>
+              </tr>
+            </thead>
+            <tbody id="transaction-tbody">
+              <tr>
+                <td colspan="11" style="text-align: center; padding: 24px; color: var(--text-muted);">
+                  Connecting to live SSE stream...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Tactile Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div>
+        <strong>AGY MONITORING GATEWAY v2.0.0</strong> · DESKTOP EDITION
+      </div>
+      <div>
+        ELECTRON RUNTIME · MULTI-SESSION TMUX & TELEGRAM BRIDGE
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
